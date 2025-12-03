@@ -43,7 +43,7 @@ async function bootstrap() {
 
   // Swagger
   app.use(
-    ['/apidoc', '/apidoc-json'],
+    ['/api-docs', '/api-docs-json'],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     basicAuth({
       challenge: true,
@@ -67,7 +67,7 @@ async function bootstrap() {
     customSiteTitle: title,
   };
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('apidoc', app, document, customSwaggerOptions);
+  SwaggerModule.setup('api-docs', app, document, customSwaggerOptions);
 
   // Auto-validation
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
