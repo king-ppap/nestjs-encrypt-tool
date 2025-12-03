@@ -4,6 +4,7 @@ import { IsDefined, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { ApiDocConfig } from './apidoc.config';
 import { CorsConfig } from './cors.config';
 import { PaginationConfig } from './pagination.config';
+import { RsaKeysConfig } from './rsa-keys.config';
 
 type NodeEnv = 'development' | 'production' | 'staging';
 
@@ -30,4 +31,9 @@ export class RootConfig {
   @ValidateNested()
   @IsDefined()
   public readonly PAGINATION: PaginationConfig;
+
+  @Type(() => RsaKeysConfig)
+  @ValidateNested()
+  @IsDefined()
+  public readonly RSA_KEYS: RsaKeysConfig;
 }

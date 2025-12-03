@@ -2,6 +2,7 @@ import { Logger, Module } from '@nestjs/common';
 import { fileLoader, TypedConfigModule } from 'nest-typed-config';
 import { RootConfig } from './config';
 import { LoggerModule } from 'nestjs-pino';
+import { EncryptionModule } from '../modules/encryption/encryption.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LoggerModule } from 'nestjs-pino';
         };
       },
     }),
+    EncryptionModule,
   ],
 })
 export class AppModule {}
