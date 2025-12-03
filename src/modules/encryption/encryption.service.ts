@@ -5,7 +5,8 @@ import {
   randomBytes,
   publicEncrypt,
   privateDecrypt,
-} from 'crypto';
+  constants,
+} from 'node:crypto';
 import { RootConfig } from '@config';
 
 @Injectable()
@@ -23,23 +24,27 @@ export class EncryptionService {
   }
 
   encryptWithAES(data: string, key: string): string {
-    const iv = randomBytes(16);
+    const iv = randomBytes(12);
     const keyBuffer = Buffer.from(key, 'hex');
-    const cipher = createCipheriv('aes-256-cbc', keyBuffer, iv);
+    const cipher = createCipheriv('aes-256-gcm', keyBuffer, iv);
 
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
 
-    return iv.toString('hex') + ':' + encrypted;
+    const authTag = cipher.getAuthTag();
+
+    return iv.toString('hex') + ':' + authTag.toString('hex') + ':' + encrypted;
   }
 
   decryptWithAES(encryptedData: string, key: string): string {
     const parts = encryptedData.split(':');
     const iv = Buffer.from(parts[0], 'hex');
-    const encryptedText = parts[1];
+    const authTag = Buffer.from(parts[1], 'hex');
+    const encryptedText = parts[2];
     const keyBuffer = Buffer.from(key, 'hex');
 
-    const decipher = createDecipheriv('aes-256-cbc', keyBuffer, iv);
+    const decipher = createDecipheriv('aes-256-gcm', keyBuffer, iv);
+    decipher.setAuthTag(authTag);
 
     let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
@@ -52,7 +57,7 @@ export class EncryptionService {
     const encrypted = privateDecrypt(
       {
         key: this.privateKey,
-        padding: 1,
+        padding: constants.RSA_PKCS1_PADDING,
       },
       buffer,
     );
@@ -64,7 +69,7 @@ export class EncryptionService {
     const encrypted = publicEncrypt(
       {
         key: this.publicKey,
-        padding: 1,
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
       },
       buffer,
     );
@@ -76,7 +81,7 @@ export class EncryptionService {
     const decrypted = publicEncrypt(
       {
         key: this.publicKey,
-        padding: 1,
+        padding: constants.RSA_PKCS1_PADDING,
       },
       buffer,
     );
@@ -88,7 +93,7 @@ export class EncryptionService {
     const decrypted = privateDecrypt(
       {
         key: this.privateKey,
-        padding: 1,
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
       },
       buffer,
     );

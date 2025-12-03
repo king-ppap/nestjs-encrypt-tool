@@ -17,7 +17,7 @@ import { DecryptResponseDto } from './dto/decrypt-response.dto';
 @Controller()
 export class EncryptionController {
   constructor(private readonly encryptionService: EncryptionService) {}
-  private logger = new Logger(EncryptionController.name);
+  private readonly logger = new Logger(EncryptionController.name);
 
   @Post('get-encrypt-data')
   @ApiOperation({
