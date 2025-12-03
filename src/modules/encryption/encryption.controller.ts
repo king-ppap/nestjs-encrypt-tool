@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Post,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EncryptionService } from './encryption.service';
 import { EncryptRequestDto } from './dto/encrypt-request.dto';
@@ -10,6 +17,7 @@ import { DecryptResponseDto } from './dto/decrypt-response.dto';
 @Controller()
 export class EncryptionController {
   constructor(private readonly encryptionService: EncryptionService) {}
+  private logger = new Logger(EncryptionController.name);
 
   @Post('get-encrypt-data')
   @ApiOperation({
@@ -30,9 +38,7 @@ export class EncryptionController {
     status: 500,
     description: 'Internal server error during encryption',
   })
-  async encryptData(
-    @Body() body: EncryptRequestDto,
-  ): Promise<EncryptResponseDto> {
+  encryptData(@Body() body: EncryptRequestDto): EncryptResponseDto {
     try {
       const aesKey = this.encryptionService.generateAESKey();
 
@@ -53,11 +59,18 @@ export class EncryptionController {
         },
       };
     } catch (error) {
-      return {
-        successful: false,
-        error_code: 'ENCRYPTION_ERROR',
-        data: null,
-      };
+      this.logger.error(
+        'Encryption failed',
+        error instanceof Error ? error.stack : error,
+      );
+      throw new HttpException(
+        {
+          successful: false,
+          error_code: 'ENCRYPTION_ERROR',
+          data: `${error}`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -80,9 +93,7 @@ export class EncryptionController {
     status: 500,
     description: 'Internal server error during decryption',
   })
-  async decryptData(
-    @Body() body: DecryptRequestDto,
-  ): Promise<DecryptResponseDto> {
+  decryptData(@Body() body: DecryptRequestDto): DecryptResponseDto {
     try {
       const aesKey = this.encryptionService.decryptWithRSAPrivateKey(
         body.data1,
@@ -101,11 +112,18 @@ export class EncryptionController {
         },
       };
     } catch (error) {
-      return {
-        successful: false,
-        error_code: 'DECRYPTION_ERROR',
-        data: null,
-      };
+      this.logger.error(
+        'Decryption failed',
+        error instanceof Error ? error.stack : error,
+      );
+      throw new HttpException(
+        {
+          successful: false,
+          error_code: 'DECRYPTION_ERROR',
+          data: `${error}`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

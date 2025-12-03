@@ -4,7 +4,6 @@ import { EncryptionService } from './encryption.service';
 
 describe('EncryptionController', () => {
   let controller: EncryptionController;
-  let service: EncryptionService;
 
   const mockEncryptionService = {
     generateAESKey: jest.fn(),
@@ -26,7 +25,6 @@ describe('EncryptionController', () => {
     }).compile();
 
     controller = module.get<EncryptionController>(EncryptionController);
-    service = module.get<EncryptionService>(EncryptionService);
   });
 
   afterEach(() => {
@@ -38,7 +36,7 @@ describe('EncryptionController', () => {
   });
 
   describe('encryptData', () => {
-    it('should successfully encrypt data and return successful response', async () => {
+    it('should successfully encrypt data and return successful response', () => {
       const payload = 'Hello, World!';
       const mockAesKey = 'mock-aes-key-64-chars-hex';
       const mockEncryptedPayload = 'iv:encrypted-data';
@@ -52,7 +50,7 @@ describe('EncryptionController', () => {
         mockEncryptedKey,
       );
 
-      const result = await controller.encryptData({ payload });
+      const result = controller.encryptData({ payload });
 
       expect(result.successful).toBe(true);
       expect(result.error_code).toBe('');
@@ -70,21 +68,17 @@ describe('EncryptionController', () => {
       ).toHaveBeenCalledWith(mockAesKey);
     });
 
-    it('should handle encryption errors and return error response', async () => {
+    it('should throw HttpException on encryption errors', () => {
       const payload = 'Test data';
 
       mockEncryptionService.generateAESKey.mockImplementation(() => {
         throw new Error('Encryption failed');
       });
 
-      const result = await controller.encryptData({ payload });
-
-      expect(result.successful).toBe(false);
-      expect(result.error_code).toBe('ENCRYPTION_ERROR');
-      expect(result.data).toBeNull();
+      expect(() => controller.encryptData({ payload })).toThrow();
     });
 
-    it('should handle empty payload', async () => {
+    it('should handle empty payload', () => {
       const payload = '';
       const mockAesKey = 'mock-aes-key';
       const mockEncryptedPayload = 'iv:encrypted-empty';
@@ -98,7 +92,7 @@ describe('EncryptionController', () => {
         mockEncryptedKey,
       );
 
-      const result = await controller.encryptData({ payload });
+      const result = controller.encryptData({ payload });
 
       expect(result.successful).toBe(true);
       expect(result.data).toBeDefined();
@@ -106,7 +100,7 @@ describe('EncryptionController', () => {
   });
 
   describe('decryptData', () => {
-    it('should successfully decrypt data and return successful response', async () => {
+    it('should successfully decrypt data and return successful response', () => {
       const data1 = 'base64-encrypted-key';
       const data2 = 'iv:encrypted-payload';
       const mockAesKey = 'mock-aes-key-64-chars';
@@ -119,7 +113,7 @@ describe('EncryptionController', () => {
         mockDecryptedPayload,
       );
 
-      const result = await controller.decryptData({ data1, data2 });
+      const result = controller.decryptData({ data1, data2 });
 
       expect(result.successful).toBe(true);
       expect(result.error_code).toBe('');
@@ -135,7 +129,7 @@ describe('EncryptionController', () => {
       );
     });
 
-    it('should handle decryption errors and return error response', async () => {
+    it('should throw HttpException on decryption errors', () => {
       const data1 = 'invalid-key';
       const data2 = 'invalid-data';
 
@@ -143,11 +137,7 @@ describe('EncryptionController', () => {
         throw new Error('Decryption failed');
       });
 
-      const result = await controller.decryptData({ data1, data2 });
-
-      expect(result.successful).toBe(false);
-      expect(result.error_code).toBe('DECRYPTION_ERROR');
-      expect(result.data).toBeNull();
+      expect(() => controller.decryptData({ data1, data2 })).toThrow();
     });
   });
 });
