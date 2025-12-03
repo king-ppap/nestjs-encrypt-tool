@@ -45,8 +45,12 @@ describe('EncryptionController', () => {
       const mockEncryptedKey = 'base64-encrypted-key';
 
       mockEncryptionService.generateAESKey.mockReturnValue(mockAesKey);
-      mockEncryptionService.encryptWithAES.mockReturnValue(mockEncryptedPayload);
-      mockEncryptionService.encryptWithRSAPublicKey.mockReturnValue(mockEncryptedKey);
+      mockEncryptionService.encryptWithAES.mockReturnValue(
+        mockEncryptedPayload,
+      );
+      mockEncryptionService.encryptWithRSAPublicKey.mockReturnValue(
+        mockEncryptedKey,
+      );
 
       const result = await controller.encryptData({ payload });
 
@@ -61,9 +65,9 @@ describe('EncryptionController', () => {
         payload,
         mockAesKey,
       );
-      expect(mockEncryptionService.encryptWithRSAPublicKey).toHaveBeenCalledWith(
-        mockAesKey,
-      );
+      expect(
+        mockEncryptionService.encryptWithRSAPublicKey,
+      ).toHaveBeenCalledWith(mockAesKey);
     });
 
     it('should handle encryption errors and return error response', async () => {
@@ -87,8 +91,12 @@ describe('EncryptionController', () => {
       const mockEncryptedKey = 'base64-key';
 
       mockEncryptionService.generateAESKey.mockReturnValue(mockAesKey);
-      mockEncryptionService.encryptWithAES.mockReturnValue(mockEncryptedPayload);
-      mockEncryptionService.encryptWithRSAPublicKey.mockReturnValue(mockEncryptedKey);
+      mockEncryptionService.encryptWithAES.mockReturnValue(
+        mockEncryptedPayload,
+      );
+      mockEncryptionService.encryptWithRSAPublicKey.mockReturnValue(
+        mockEncryptedKey,
+      );
 
       const result = await controller.encryptData({ payload });
 
@@ -104,8 +112,12 @@ describe('EncryptionController', () => {
       const mockAesKey = 'mock-aes-key-64-chars';
       const mockDecryptedPayload = 'Hello, World!';
 
-      mockEncryptionService.decryptWithRSAPrivateKey.mockReturnValue(mockAesKey);
-      mockEncryptionService.decryptWithAES.mockReturnValue(mockDecryptedPayload);
+      mockEncryptionService.decryptWithRSAPrivateKey.mockReturnValue(
+        mockAesKey,
+      );
+      mockEncryptionService.decryptWithAES.mockReturnValue(
+        mockDecryptedPayload,
+      );
 
       const result = await controller.decryptData({ data1, data2 });
 
@@ -114,9 +126,9 @@ describe('EncryptionController', () => {
       expect(result.data).toBeDefined();
       expect(result.data?.payload).toBe(mockDecryptedPayload);
 
-      expect(mockEncryptionService.decryptWithRSAPrivateKey).toHaveBeenCalledWith(
-        data1,
-      );
+      expect(
+        mockEncryptionService.decryptWithRSAPrivateKey,
+      ).toHaveBeenCalledWith(data1);
       expect(mockEncryptionService.decryptWithAES).toHaveBeenCalledWith(
         data2,
         mockAesKey,
