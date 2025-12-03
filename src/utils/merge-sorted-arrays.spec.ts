@@ -93,7 +93,9 @@ describe('merge', () => {
 
       const result = merge(collection_1, collection_2, collection_3);
 
-      expect(result).toEqual([5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100]);
+      expect(result).toEqual([
+        5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100,
+      ]);
     });
 
     it('should merge when collection_2 is much longer', () => {
@@ -155,7 +157,9 @@ describe('merge', () => {
 
       const result = merge(collection_1, collection_2, collection_3);
 
-      expect(result).toEqual([100000, 200000, 300000, 500000, 600000, 700000, 1000000, 2000000]);
+      expect(result).toEqual([
+        100000, 200000, 300000, 500000, 600000, 700000, 1000000, 2000000,
+      ]);
     });
   });
 

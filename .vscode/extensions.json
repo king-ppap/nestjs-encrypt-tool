@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "sonarsource.sonarlint-vscode",
+        "esbenp.prettier-vscode",
+        "mhutchie.git-graph",
+        "anthropic.claude-code"
+    ]
+}
